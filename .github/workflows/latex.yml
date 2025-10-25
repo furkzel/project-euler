@@ -1,0 +1,17 @@
+name: Build LaTeX
+on:
+  push: { paths: ["docs/**/*.tex"] }
+  pull_request: { paths: ["docs/**/*.tex"] }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xu-cheng/latex-action@v3
+        with:
+          root_file: docs/triangular.tex
+          latexmk_use_xelatex: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: triangular-pdf
+          path: docs/triangular.pdf
