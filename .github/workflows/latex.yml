@@ -1,17 +1,36 @@
 name: Build LaTeX
+
 on:
-  push: { paths: ["docs/**/*.tex"] }
-  pull_request: { paths: ["docs/**/*.tex"] }
+  push:
+    paths: ["docs/**/*.tex"]
+  pull_request:
+    paths: ["docs/**/*.tex"]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: xu-cheng/latex-action@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX (latexmk + xelatex)
+        uses: xu-cheng/latex-action@v3
         with:
-          root_file: docs/triangular.tex
+          # Çalışma dizinini docs/ yap → çıktılar burada üretilsin
+          working_directory: docs
+          # Derlenecek ana dosya(lar)
+          root_file: triangular.tex
+          # xelatex öneriyoruz (Unicode/TTF desteği için)
           latexmk_use_xelatex: true
-      - uses: actions/upload-artifact@v4
+          # daha okunur loglar
+          args: -interaction=nonstopmode -file-line-error
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
         with:
           name: triangular-pdf
-          path: docs/triangular.pdf
+          # Önce beklenen tam yolu dener, yine de farklı yere düşerse wildcard yedek
+          path: |
+            docs/triangular.pdf
+            **/*.pdf
